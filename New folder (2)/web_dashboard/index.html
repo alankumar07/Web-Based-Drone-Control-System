@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AeroLink GCS - Web-Based Drone Control System</title>
+  <meta name="description" content="Next-generation Web-Based Ground Control Station for ESP32 Quadcopters with real-time WebSockets telemetry and dual virtual joysticks.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Aviation Flight HUD -->
+  <header>
+    <div class="brand-section">
+      <svg class="brand-logo" viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 19 21 12 17 5 21 12 2"></polygon>
+      </svg>
+      <div class="brand-title">AEROLINK // GCS</div>
+      <div class="connection-pill">
+        <div id="status-dot" class="status-dot"></div>
+        <span id="conn-status-text">CONNECTING...</span>
+      </div>
+    </div>
+
+    <!-- Live Telemetry Readouts -->
+    <div class="hud-gauges">
+      <div class="gauge-item">
+        <span class="gauge-label">Battery (1S/2S)</span>
+        <span id="hud-battery" class="gauge-val">-- V</span>
+      </div>
+      <div class="gauge-item">
+        <span class="gauge-label">Signal (RSSI)</span>
+        <span id="hud-rssi" class="gauge-val">-- dBm</span>
+      </div>
+      <div class="gauge-item">
+        <span class="gauge-label">Latency (RTT)</span>
+        <span id="hud-ping" class="gauge-val">-- ms</span>
+      </div>
+    </div>
+
+    <!-- Flight Action Controls -->
+    <div class="hud-controls">
+      <button id="btn-demo" class="btn" style="background: rgba(16, 185, 129, 0.15); color: var(--neon-emerald); border: 1px solid var(--neon-emerald);" title="Test flight without physical hardware">
+        🎮 DEMO FLIGHT
+      </button>
+      <button id="btn-settings" class="btn" style="background: rgba(255,255,255,0.06); color: var(--text-secondary);" title="Connection Settings">
+        ⚙ IP SETTINGS
+      </button>
+      <button id="btn-arm" class="btn btn-arm">DISARMED</button>
+      <button id="btn-kill" class="btn btn-kill">EMERGENCY KILL</button>
+    </div>
+  </header>
+
+  <!-- Flight Deck Main Area -->
+  <main>
+    <!-- Left Panel: Throttle & Yaw -->
+    <section class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Throttle / Yaw (Mode 2)</span>
+        <span style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">W/S & A/D</span>
+      </div>
+      <div class="joystick-wrapper">
+        <div id="joy-zone-left" class="joystick-zone">
+          <div class="crosshair-h"></div>
+          <div class="crosshair-v"></div>
+          <div id="joy-puck-left" class="joystick-puck"></div>
+        </div>
+      </div>
+      <div class="stick-values">
+        <div>THROTTLE: <span id="stick-throttle-val">0%</span></div>
+        <div>YAW RATE: <span id="stick-yaw-val">0°/s</span></div>
+      </div>
+    </section>
+
+    <!-- Center Deck: Artificial Horizon & Motor Status -->
+    <section class="panel center-deck">
+      <div class="panel-header">
+        <span class="panel-title">Attitude & Power Distribution</span>
+        <span style="font-size: 0.7rem; color: var(--neon-cyan); font-family: var(--font-mono);">QUAD-X</span>
+      </div>
+
+      <!-- Artificial Horizon Attitude Indicator Canvas -->
+      <div class="horizon-container">
+        <canvas id="attitudeCanvas" width="220" height="220"></canvas>
+      </div>
+
+      <!-- 4-Motor Thrust Gauges -->
+      <div class="quad-motor-layout">
+        <div class="motor-card">
+          <div class="motor-meta">
+            <span>M1 [FL] (CW)</span>
+            <span id="val-m1">0%</span>
+          </div>
+          <div class="motor-progress-track">
+            <div id="bar-m1" class="motor-progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="motor-card">
+          <div class="motor-meta">
+            <span>M2 [FR] (CCW)</span>
+            <span id="val-m2">0%</span>
+          </div>
+          <div class="motor-progress-track">
+            <div id="bar-m2" class="motor-progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="motor-card">
+          <div class="motor-meta">
+            <span>M3 [RL] (CCW)</span>
+            <span id="val-m3">0%</span>
+          </div>
+          <div class="motor-progress-track">
+            <div id="bar-m3" class="motor-progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="motor-card">
+          <div class="motor-meta">
+            <span>M4 [RR] (CW)</span>
+            <span id="val-m4">0%</span>
+          </div>
+          <div class="motor-progress-track">
+            <div id="bar-m4" class="motor-progress-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Diagnostic Console -->
+      <div id="console-log" class="console-log"></div>
+    </section>
+
+    <!-- Right Panel: Pitch & Roll -->
+    <section class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Pitch / Roll (Cyclic)</span>
+        <span style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">ARROWS</span>
+      </div>
+      <div class="joystick-wrapper">
+        <div id="joy-zone-right" class="joystick-zone">
+          <div class="crosshair-h"></div>
+          <div class="crosshair-v"></div>
+          <div id="joy-puck-right" class="joystick-puck"></div>
+        </div>
+      </div>
+      <div class="stick-values">
+        <div>ROLL: <span id="stick-roll-val">0°</span></div>
+        <div>PITCH: <span id="stick-pitch-val">0°</span></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Settings & IP Configuration Modal -->
+  <div id="settings-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">CONNECTION CONFIGURATION</div>
+      <div class="form-group">
+        <label class="form-label" for="input-drone-ip">ESP32 Drone IP Address / Hostname</label>
+        <input type="text" id="input-drone-ip" class="form-input" placeholder="e.g. 192.168.4.1 or 192.168.1.50">
+        <small style="color: var(--text-muted); display:block; margin-top:6px;">
+          Default SoftAP IP is <code>192.168.4.1</code>. Enter your local LAN IP if running in Station (STA) mode.
+        </small>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+        <button id="btn-save-ip" class="btn" style="background: var(--neon-cyan); color: #000;">SAVE & RECONNECT</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Info -->
+  <footer>
+    <div>Hardware: ESP32 DevKit V1 + MPU-6050 6-DOF IMU | Wi-Fi 802.11 b/g/n</div>
+    <div>Gamepad: USB/Bluetooth Controller Supported | Spacebar: Quick Kill</div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/telemetry.js"></script>
+  <script src="js/joystick.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

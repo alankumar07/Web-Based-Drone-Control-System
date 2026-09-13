@@ -1,0 +1,479 @@
+/**
+ * Web-Based Drone Control System - Ground Control Station (GCS)
+ * Advanced Cyber-Aviation Styling
+ * Author: Alan Tomar (Jun 2024)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg-space: #060913;
+  --panel-bg: rgba(15, 23, 42, 0.75);
+  --panel-border: rgba(56, 189, 248, 0.22);
+  --panel-glow: rgba(0, 242, 254, 0.12);
+  
+  --neon-cyan: #00f2fe;
+  --neon-blue: #38bdf8;
+  --neon-emerald: #10b981;
+  --neon-amber: #f59e0b;
+  --neon-crimson: #ef4444;
+  --neon-purple: #8b5cf6;
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --font-hud: 'Orbitron', monospace;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  background-color: var(--bg-space);
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 60%),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  touch-action: manipulation;
+}
+
+/* ==========================================================================
+   Top Header & Flight Telemetry HUD
+   ========================================================================== */
+header {
+  background: rgba(10, 15, 30, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--panel-border);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 0 8px var(--neon-cyan));
+}
+
+.brand-title {
+  font-family: var(--font-hud);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--neon-cyan), #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.connection-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--neon-crimson);
+  box-shadow: 0 0 10px var(--neon-crimson);
+  transition: all 0.3s ease;
+}
+
+.status-dot.connected {
+  background: var(--neon-emerald);
+  box-shadow: 0 0 12px var(--neon-emerald);
+}
+
+.hud-gauges {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.gauge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.gauge-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.gauge-val {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.hud-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn {
+  font-family: var(--font-hud);
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-arm {
+  background: rgba(30, 41, 59, 0.8);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.btn-arm.armed {
+  background: var(--neon-emerald);
+  color: #022c22;
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.6);
+  border-color: transparent;
+}
+
+.btn-kill {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.4);
+}
+
+.btn-kill:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 24px rgba(239, 68, 68, 0.7);
+}
+
+.btn-kill:active {
+  transform: scale(0.96);
+}
+
+/* ==========================================================================
+   Main Grid Layout
+   ========================================================================== */
+main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 320px 1fr 320px;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+}
+
+.panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 1px 1px rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.panel-title {
+  font-family: var(--font-hud);
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Joystick Interface
+   ========================================================================== */
+.joystick-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 280px;
+}
+
+.joystick-zone {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(15, 23, 42, 0.8) 0%, rgba(6, 9, 19, 0.95) 100%);
+  border: 2px solid rgba(56, 189, 248, 0.3);
+  box-shadow: 
+    inset 0 0 30px rgba(0, 242, 254, 0.08),
+    0 0 20px rgba(0, 0, 0, 0.6);
+  position: relative;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.crosshair-h, .crosshair-v {
+  position: absolute;
+  background: rgba(56, 189, 248, 0.15);
+}
+.crosshair-h {
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+}
+.crosshair-v {
+  left: 50%;
+  top: 10%;
+  bottom: 10%;
+  width: 1px;
+}
+
+.joystick-puck {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #38bdf8 0%, #0369a1 80%);
+  border: 2px solid var(--neon-cyan);
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+  position: absolute;
+  top: calc(50% - 38px);
+  left: calc(50% - 38px);
+  pointer-events: none;
+  transition: transform 0.04s ease-out;
+}
+
+.stick-values {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.stick-values span {
+  color: var(--neon-blue);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Center Flight Deck (Attitude Horizon & Motors)
+   ========================================================================== */
+.center-deck {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.horizon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+#attitudeCanvas {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 4px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 242, 254, 0.15);
+}
+
+.quad-motor-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.motor-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.motor-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+}
+
+.motor-progress-track {
+  height: 8px;
+  background: #1e293b;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.motor-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+  border-radius: 4px;
+  transition: width 0.08s ease-out;
+}
+
+/* ==========================================================================
+   Console / Log Drawer
+   ========================================================================== */
+.console-log {
+  background: rgba(3, 7, 18, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  height: 90px;
+  overflow-y: auto;
+  color: var(--text-secondary);
+}
+
+.log-entry {
+  line-height: 1.5;
+}
+.log-entry.info { color: var(--neon-blue); }
+.log-entry.warn { color: var(--neon-amber); }
+.log-entry.danger { color: var(--neon-crimson); }
+
+/* ==========================================================================
+   Modal Dialog for Settings / Connection
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #0f172a;
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 480px;
+  padding: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.modal-header {
+  font-family: var(--font-hud);
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  color: var(--neon-cyan);
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+
+.form-input {
+  width: 100%;
+  background: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+footer {
+  background: rgba(10, 15, 30, 0.9);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 8px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
