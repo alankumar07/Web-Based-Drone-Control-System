@@ -6,7 +6,7 @@ The project is designed using **ESP32, Web Technologies, and Embedded Systems**,
 
 ---
 
-## ✨ Features 
+## ✨ Features  
 
 * 🎮 **Web-Based Control** — Control the drone directly from a web browser.
 * 📱 **Responsive Interface** — Can be accessed from a laptop, tablet, or smartphone.
